@@ -22,34 +22,60 @@ mod tests {
     async fn test_02_detect_jpn() {
         let result = async {
             use chatgpt::prelude::*;
-            // use chatgpt::types::CompletionResponse;
 
-            // Enter your ChatGPT key as an argument
-            // let key = std::env::args().nth(3).unwrap();
             let key = dotenvy::var("OPENAI_KEY").expect("OPEN_AI key must be set");
             let client = ChatGPT::new(key)?;
 
             let conversation = r#"
                 You're an expert at detecting whether sentences are in the Japanese or English language.
                 What is the language of the following sentence?  
-                Respond by stating the language (English or Japanese)
+                Respond by stating the just the language (English or Japanese)
             "#;
             let conversation_string = conversation.to_string();
             let mut conversation: Conversation =
                 client.new_conversation_directed(&conversation_string);
 
             let sentences = "私はアレクスーケリーです。".to_string();
-            // let response: Result<CompletionResponse> = conversation.send_message(&sentences).await;
             conversation.send_message(&sentences).await
         };
 
         match result.await {
             Ok(cr) => {
-                println!(
-                    "Completion response: {:#?}",
-                    cr.message_choices[0].message.content
-                );
-                assert!(true);
+                let language = &cr.message_choices[0].message.content;
+                assert_eq!(language, "Japanese");
+            }
+            Err(e) => {
+                println!("Error: {:#?}", e);
+                assert!(false);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_03_detect_eng() {
+        let result = async {
+            use chatgpt::prelude::*;
+
+            let key = dotenvy::var("OPENAI_KEY").expect("OPEN_AI key must be set");
+            let client = ChatGPT::new(key)?;
+
+            let conversation = r#"
+                You're an expert at detecting whether sentences are in the Japanese or English language.
+                What is the language of the following sentence?  
+                Respond by stating the just the language (English or Japanese)
+            "#;
+            let conversation_string = conversation.to_string();
+            let mut conversation: Conversation =
+                client.new_conversation_directed(&conversation_string);
+
+            let sentences = "I am Alex Kelley".to_string();
+            conversation.send_message(&sentences).await
+        };
+
+        match result.await {
+            Ok(cr) => {
+                let language = &cr.message_choices[0].message.content;
+                assert_eq!(language, "English");
             }
             Err(e) => {
                 println!("Error: {:#?}", e);
