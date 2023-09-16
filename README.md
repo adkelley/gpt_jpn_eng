@@ -3,8 +3,7 @@
 ## User Stories
 1. As a User, I can select one or more lines of English or Japanese text in a 
 document and convert it, inline, to Japanese or English, respectively.
-2. As a User, I should be able to specify the context and the degree of formality in the desired 
-translation
+2. As a User, I should see the translation begin printing almost immediately
 
 ## UI Notes
 ### UI Steps
@@ -15,7 +14,9 @@ translation
 
 ## Programming Notes
 1. Use TextExpander to enter a keyboard shortcut
-2. Uses [chatgpt_rs](https://docs.rs/chatgpt_rs/1.2.1/chatgpt/index.html) crate
+2. Uses [chatgpt_rs](https://docs.rs/chatgpt_rs/1.2.1/chatgpt/index.html) crate. The GitHub repository can be
+found [here](https://github.com/Maxuss/chatgpt_rs)
 
 ## Todo
-1. Add streaming reponses feature to begin printing the translation immediately
+[x] MVP
+[ ] Add streaming responses feature to begin printing the translation immediately
