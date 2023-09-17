@@ -18,14 +18,15 @@ using the clipboard's contents as its argument.
 
 ## What Could Possibly Go Wrong?
 1. The number of tokens consumed during the translation will vary by the number of characters you wish
-to translate.  If you find the resulting translation incomplete, set the
+to translate.  If the resulting translation incomplete, set the
 `OPENAPI_MAX_TOKENS` in your `.env` file to a higher number (> 1000).
 
 2. Long text passages may take several seconds to translate and show up in your document.  I've 
 improved the response of this program by adding streaming responses, which gradually builds the response message.
-However, TextExpander appears to buffer stdout, waiting to print everything simultaneously
-instead of continuously printing the translation. So this may or may not work for your 
-use case.
+One caution, however. TextExpander appears to buffer stdout, waiting to print everything simultaneously
+instead of continuously printing the translation. Worse is that the TextExpander script will time out on long
+text passages. The workaround is to translate smaller text passages, or copy the entire selection and run it 
+through Google Translate in your browser.
 
 ## User Stories
 1. [x]  As a User, I can select one or more lines of English or Japanese text in a document and convert it, 

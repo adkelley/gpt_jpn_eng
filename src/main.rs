@@ -1,6 +1,8 @@
 use anyhow::{Error, Result};
 use chatgpt::config::{ModelConfiguration, ModelConfigurationBuilder};
 use chatgpt::prelude::*;
+use futures_util::StreamExt;
+use std::io::{stdout, Write};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -31,13 +33,26 @@ async fn main() -> Result<(), Error> {
             You are an expert at translating Japanese or English languages.  Please translate the 
             following sentences into Japanese or English, depending on whether the original sentences 
             are in English or Japanese.  Please respond with the translation only and do not specify
-            whether the translated sentence is Japanese or English.
+            whether the translated sentence is Japanese or English. Here are the sentences: 
             "#;
-    let conversation_string = conversation.to_string();
-    let mut conversation: Conversation = client.new_conversation_directed(&conversation_string);
+    let conversation_string = format!("{}{}", conversation.to_string(), sentences);
+    let stream = client.send_message_streaming(&conversation_string).await?;
 
-    let translation = conversation.send_message(&sentences).await?;
-    println!("{}", translation.message_choices[0].message.content);
+    // Iterate over stream contents
+    stream
+        .for_each(|each| async move {
+            if let ResponseChunk::Content {
+                delta,
+                response_index: _,
+            } = each
+            {
+                // Printing part of response without newline
+                print!("{delta}");
+                // Manually flushing the standard output, as `print` macro does not
+                stdout().lock().flush().unwrap();
+            }
+        })
+        .await;
 
     Ok(())
 }
